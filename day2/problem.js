@@ -1,11 +1,11 @@
-// import { input } from "./input.js";
+import { input } from "./input.js";
 
-const input = `7 6 4 2 1
-1 2 7 8 9
-9 7 6 2 1
-1 3 2 4 5
-8 6 4 4 1
-1 3 6 7 9`;
+// const input = `7 6 4 2 1
+// 1 2 7 8 9
+// 9 7 6 2 1
+// 1 3 2 4 5
+// 8 6 4 4 1
+// 1 3 6 7 9`;
 
 const addedElements = new Set();
 const inputArray = input.split("\n");
@@ -27,7 +27,7 @@ function isSafe(element) {
       return false;
     }
   }
-  return Math.abs(count) > element.length - 3;
+  return Math.abs(count) > element.length - 2;
 }
 
 // loops through array
