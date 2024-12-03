@@ -7,18 +7,14 @@ const input = `7 6 4 2 1
 8 6 4 4 1
 1 3 6 7 9`;
 
-const inputArray = input.split("\n")
+const addedElements = new Set();
+const inputArray = input.split("\n");
 
 let safeArray = [];
 let safeCount = 0;
 
-// loops through array
-for (let i = 0; i < inputArray.length; i++) {
-  const element = inputArray[i].split(" ").map(Number);
-
-  // loops through element
+function isSafe(element) {
   let count = 0;
-  let isValid = true;
   for (let j = 0; j < element.length - 1; j++) {
     const curr = element[j];
     const next = element[j + 1];
@@ -28,56 +24,40 @@ for (let i = 0; i < inputArray.length; i++) {
     } else if ((next > curr) && next < (curr + 4)) {
       count++;
     } else {
-      isValid = false;
-      break; // If any pair is invalid, break out of the loop
+      return false;
     }
-    // console.log([i], "count 1", count)
   }
-  // console.log([i],"count 2", count)
-  if (isValid && Math.abs(count) == element.length - 1) {
-    safeCount++
-    safeArray.push(element)
+  return Math.abs(count) > element.length - 3;
+}
+
+// loops through array
+for (let i = 0; i < inputArray.length; i++) {
+  const element = inputArray[i].split(" ").map(Number);
+
+  if (isSafe(element)) {
+    const elementString = `${i}:${element.join(',')}`;
+    if (!addedElements.has(elementString)) {
+      safeCount++;
+      safeArray.push(element);
+      addedElements.add(elementString);
+    }
+  } else {
+    // Try removing each level one by one
+    for (let j = 0; j < element.length; j++) {
+      const newElement = element.slice(0, j).concat(element.slice(j + 1));
+      console.log(newElement)
+      if (isSafe(newElement)) {
+        const elementString = `${i}:${newElement.join(',')}`;
+        if (!addedElements.has(elementString)) {
+          safeCount++;
+          safeArray.push(newElement);
+          addedElements.add(elementString);
+          break;
+        }
+      }
+    }
   }
 }
 
-console.log("safeArray :", safeArray)
-console.log("safeCount :", safeCount)
-
-// (isValid < 2 && Math.abs(count) >= element.length - 2)
-
-
-// const inputArray = input.split("\n")
-
-// let safeArray = [];
-// let safeCount = 0;
-
-// // loops through array
-// for (let i = 0; i < inputArray.length; i++) {
-//   const element = inputArray[i].split(" ").map(Number);
-
-//   // loops through element
-//   let count = 0;
-//   let isValid = true;
-//   for (let j = 0; j < element.length - 1; j++) {
-//     const curr = element[j];
-//     const next = element[j + 1];
-
-//     if (next >= curr - 3 && next <= curr - 1) {
-//       count--;
-//     } else if ((next > curr) && next < (curr + 4)) {
-//       count++;
-//     } else {
-//       isValid = false;
-//       break; // If any pair is invalid, break out of the loop
-//     }
-//     // console.log([i], "count 1", count)
-//   }
-//   // console.log([i],"count 2", count)
-//   if (isValid && Math.abs(count) == element.length - 1) {
-//     safeCount++
-//     safeArray.push(element)
-//   }
-// }
-
-// console.log("safeArray :", safeArray)
-// console.log("safeCount :", safeCount)
+console.log("safeArray :", safeArray);
+console.log("safeCount :", safeCount);
