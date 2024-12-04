@@ -45,7 +45,7 @@ for (let i = 0; i < inputArray.length; i++) {
     // Try removing each level one by one
     for (let j = 0; j < element.length; j++) {
       const newElement = element.slice(0, j).concat(element.slice(j + 1));
-      console.log(newElement)
+      console.log(`Trying newElement: ${newElement}`);
       if (isSafe(newElement)) {
         const elementString = `${i}:${newElement.join(',')}`;
         if (!addedElements.has(elementString)) {
@@ -59,5 +59,5 @@ for (let i = 0; i < inputArray.length; i++) {
   }
 }
 
-console.log("safeArray :", safeArray);
+// console.log("safeArray :", safeArray);
 console.log("safeCount :", safeCount);
