@@ -1,41 +1,54 @@
 import fs from "fs";
 
-const input = `xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))`;
+const input = getInput("src/bin/day3/input.txt")
 
-// const input = getInput("src/bin/day3/input.txt")
+const mulRegex = /mul\(\d{1,3}\b\,\d{1,3}\)/g;       // to get mul(... , ...)
+const digitRegex = /\d{1,3}\b\,\d{1,3}/g;            // to get digits (..., ...)
 
-const mulRegex = /\mul\(\d{1,3}\b\,\d{1,3}\b\)/g;    // to get mul(... , ...)
-const digitRegex = /\d{1,3}\b\,\d{1,3}/g;            // to get digits
-const doAndDontRegex = /do\(\)|don\'t\(\)/g;         // to get do() and don't()
-
-const mulMatches = input.match(mulRegex);
-const doAndDontMatches = input.match(doAndDontRegex);
-
-const doString = "do";
-const dontString = "don't";
-
-
-console.log(doAndDontMatches);
+const doString = "do()";
+const dontString = "don't()";
 
 function getInput(location) {
   const data = fs.readFileSync(String(location), "utf-8");
   return data;
 }
 
-function solution1() {
-  let sum = 0;
 
-  for (let i = 0; i < mulMatches.length; i++) {
-    const element = matches[i]
-    const numbers = element.match(digitRegex).toString().split(",");
+let sum = 0;
 
-    sum += numbers[0] * numbers[1];
+function multiply(input1) {
+  const input = input1.match(mulRegex)
+
+  for (let i = 0; i < input.length; i++) {
+    const element = input[i];                          //returns string mul(x,y)
+    const matches = element.match(digitRegex)          // returns [ 'x,y' ]
+    if (matches) {
+      const numbers = matches.toString().split(",");   // returns [ 'x', 'y' ]
+      sum += numbers[0] * numbers[1];
+    }
   }
-  console.log("solution 1 result:", sum);
+  return sum
 }
-
-// solution1();
+console.log("----------------- solution 1 ---------------------------")
+console.log("Sum: ", multiply(input))
 
 function solution2() {
+  sum = 0
 
+  console.log("----------------- solution 2 ---------------------------")
+  const dontSplitted = input.split(dontString)
+
+  for (let i = 0; i < dontSplitted.length; i++) {
+    const element = dontSplitted[i];
+
+    const doSplitted = element.split(doString)
+
+    for (let j = 1; j < doSplitted.length; j++) {
+      const element = doSplitted[j];
+      multiply(element)
+    }
+  }
+  multiply(dontSplitted[0])
 }
+solution2()
+console.log("Sum:", sum);
