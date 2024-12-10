@@ -1,4 +1,5 @@
-const input = `47|53
+const input =
+  `47|53
 97|13
 97|61
 97|47
@@ -33,7 +34,9 @@ const part2 = parts[1];
 
 const part1Lines = part1.split("\n");
 const part2Lines = part2.split("\n")
+const answerArray = [];
 
+const numberArray = [];
 
 // Convert part1 into an array of objects
 const arrayOfObjects = [];
@@ -43,9 +46,47 @@ for (let i = 0; i < part1Lines.length; i++) {
   arrayOfObjects.push({ x, y });
 }
 
-// loop through the part2Lines
 
+let safe = true;
+let safeLines = [];
+for (const object of arrayOfObjects) {
+  // object.x
+  // object.y
 
-// On every line loop through arrayOfObjects and confirm if y doesn't show up before x
+  // Loops through every line in part2Lines
+  for (let i = 0; i < part2Lines.length; i++) {
+    const line = part2Lines[i];
+
+    // check if object.x shows up before object.y
+    if (
+      line.indexOf(object.x) < 0 ||
+      line.indexOf(object.y) < 0 ||
+      line.indexOf(object.x) > line.indexOf(object.y)
+    ) {
+      safe = false;
+    } else {
+      safe = true;
+      console.log(line.indexOf(object.x), "object.x", object.x)
+      console.log(line.indexOf(object.y), "object.y", object.y)
+
+      if (safe) {
+        safeLines.push([i])
+      }
+    }
+
+    // console.log("line nr:", [i])
+    // console.log("safeLines", safeLines)
+
+    // const occurrences = safeLines.reduce(function (acc, curr) {
+    //   return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+    // }, {});
+    // console.log(occurrences)
+
+    //push to numberArray
+    // when array == line.length check if safe
+    // if safe push to safeArray
+  }
+}
+
 // If it is true push them into an array
 // extract and sum the middle number of every array
