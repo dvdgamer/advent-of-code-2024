@@ -34,9 +34,8 @@ const part2 = parts[1];
 
 const part1Lines = part1.split("\n");
 const part2Lines = part2.split("\n")
-const answerArray = [];
 
-const numberArray = [];
+const safeLines = [];
 
 // Convert part1 into an array of objects
 const arrayOfObjects = [];
@@ -46,47 +45,39 @@ for (let i = 0; i < part1Lines.length; i++) {
   arrayOfObjects.push({ x, y });
 }
 
-
 let safe = true;
-let safeLines = [];
-for (const object of arrayOfObjects) {
-  // object.x
-  // object.y
 
-  // Loops through every line in part2Lines
-  for (let i = 0; i < part2Lines.length; i++) {
-    const line = part2Lines[i];
+for (let i = 0; i < part2Lines.length; i++) {
+  let line = part2Lines[i];
+  line = line.split(",")
 
-    // check if object.x shows up before object.y
+  const lineSize = line.length;
+
+  for (const object of arrayOfObjects) {
+    // check if the items are present in the array
     if (
-      line.indexOf(object.x) < 0 ||
-      line.indexOf(object.y) < 0 ||
-      line.indexOf(object.x) > line.indexOf(object.y)
+      line.indexOf(object.x) === -1 ||
+      line.indexOf(object.y) === -1 ||
+      undefined
     ) {
-      safe = false;
-    } else {
-      safe = true;
-      console.log(line.indexOf(object.x), "object.x", object.x)
-      console.log(line.indexOf(object.y), "object.y", object.y)
-
-      if (safe) {
-        safeLines.push([i])
-      }
+      // add element to change size of the array
+    } else if (line.indexOf(object.x) > line.indexOf(object.y)) {
+      line.push(1)
     }
-
-    // console.log("line nr:", [i])
-    // console.log("safeLines", safeLines)
-
-    // const occurrences = safeLines.reduce(function (acc, curr) {
-    //   return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
-    // }, {});
-    // console.log(occurrences)
-
-    //push to numberArray
-    // when array == line.length check if safe
-    // if safe push to safeArray
+  }
+  if (line.length === lineSize) {
+    safeLines.push(line)
   }
 }
+console.log(safeLines)
 
-// If it is true push them into an array
-// extract and sum the middle number of every array
+// sum the middle item of each safe Line
+let sum = 0;
+
+for (const line of safeLines) {
+  const index = Math.floor(line.length / 2)
+
+  sum += Number(line[index])
+}
+
+console.log("answer is:", sum)
