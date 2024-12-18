@@ -37,7 +37,7 @@ const pages = parts[0];
 const updates = parts[1];
 
 const pagesLines = pages.split("\n");
-const updatesLines = updates.split("\n")
+const updatesLines = updates.split("\n");
 
 const safeLines = [];
 let unsafeLines = [];
@@ -54,55 +54,44 @@ for (let i = 0; i < pagesLines.length; i++) {
 function minusOneRemover(array) {
   for (const line of array) {
     // Delete all the -1 pushed onto the array
-    const indexOfminusOne = line.indexOf(-1)
-
+    const indexOfminusOne = line.indexOf(-1);
     if (indexOfminusOne > 0) {
       const numberOfminusOnes = line.length - indexOfminusOne;
-      line.splice(line.indexOf(-1), numberOfminusOnes)
+      line.splice(indexOfminusOne, numberOfminusOnes);
     }
   }
 }
 
 const swapElements = (arr, x, y) => {
   [arr[x], arr[y]] = [arr[y], arr[x]];
-
   return arr;
 };
 
 function safeOrUnsafe(array, safeArray, unsafeArray) {
   for (let i = 0; i < array.length; i++) {
     let line = array[i];
-    // console.log("line", line)
-
     if (typeof line === "string") {
-      line = line.split(",")
+      line = line.split(",");
     }
 
     const lineSize = line.length;
     for (const object of arrayOfObjects) {
       // check if the items are present in the array
-      if (
-        line.indexOf(object.x) === -1 ||
-        line.indexOf(object.y) === -1
-      ) {
+      if (line.indexOf(object.x) === -1 || line.indexOf(object.y) === -1) {
         // if it fails the check, add element to change size of the array
       } else if (line.indexOf(object.x) > line.indexOf(object.y)) {
-        swapElements(line, line.indexOf(object.x), line.indexOf(object.y))
-        line.push(-1)
+        swapElements(line, line.indexOf(object.x), line.indexOf(object.y));
+        line.push(-1);
       }
     }
     if (line.length === lineSize) {
-      safeArray.push(line)
+      safeArray.push(line);
     } else {
-      unsafeArray.push(line)
+      unsafeArray.push(line);
     }
-    minusOneRemover(unsafeArray)
+    minusOneRemover(unsafeArray);
   }
 }
-let sum = 0;
-
-safeOrUnsafe(updatesLines, safeLines, unsafeLines);
-sumMiddleNumber(safeLines)
 
 function processUnsafeLines(unsafeLines) {
   stillUnsafeLines = [];
@@ -113,10 +102,7 @@ function processUnsafeLines(unsafeLines) {
 
     for (const object of arrayOfObjects) {
       // check if the items are present in the array
-      if (
-        line.indexOf(object.x) === -1 ||
-        line.indexOf(object.y) === -1
-      ) {
+      if (line.indexOf(object.x) === -1 || line.indexOf(object.y) === -1) {
         // if it fails the check, add element to change size of the array
       } else if (line.indexOf(object.x) > line.indexOf(object.y)) {
         swapElements(line, line.indexOf(object.x), line.indexOf(object.y));
@@ -128,24 +114,32 @@ function processUnsafeLines(unsafeLines) {
       stillUnsafeLines.push(line);
       minusOneRemover(stillUnsafeLines);
     }
+    // console.log("stillUnsafeLines", stillUnsafeLines)
+
   }
-
-  return stillUnsafeLines;
-}
-
-sum = 0;
-
-processUnsafeLines(unsafeLines)
-
-while (unsafeLines.length > 0) {
-  sumMiddleNumber(unsafeLines)
-  unsafeLines = processUnsafeLines(unsafeLines);
+  while (stillUnsafeLines.length > 0) {
+    processUnsafeLines(stillUnsafeLines)
+  }
 }
 
 function sumMiddleNumber(array) {
+  let sum = 0;
   for (const line of array) {
-    const index = Math.floor(line.length / 2)
-    sum += Number(line[index])
-    console.log("sum", sum)
+    const index = Math.floor(line.length / 2);
+    sum += Number(line[index]);
   }
+  return sum;
 }
+
+// Initial processing of updates
+safeOrUnsafe(updatesLines, safeLines, unsafeLines);
+
+// Sum middle numbers of safe lines
+let sum = sumMiddleNumber(safeLines);
+console.log("sum 1:", sum);
+
+processUnsafeLines(unsafeLines)
+
+// Sum middle numbers of corrected unsafe lines
+sum = sumMiddleNumber(unsafeLines);
+console.log("sum 2:", sum);
