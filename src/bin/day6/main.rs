@@ -15,11 +15,40 @@ struct Guard {
     direction: Direction,
 }
 
-// impl Guard {
-//     fn new (position: (usize, usize), direction: Direction) -> Self {
-//       Guard { current_position: (), direction: () }
-//     }
-// }
+impl Guard {
+    fn new(position: (usize, usize), direction: Direction) -> Self {
+        Guard {
+            current_position: position,
+            direction,
+        }
+    }
+
+    fn move_guard(&mut self, grid: &Vec<Vec<char>>) {
+        let (x, y) = self.current_position;
+        match self.direction {
+            Direction::Up => {
+                if x > 0 && grid[x - 1][y] != '#' {
+                    self.current_position.0 -= 1;
+                }
+            }
+            Direction::Right => {
+                if y < grid[0].len() - 1 && grid[x][y + 1] != '#' {
+                    self.current_position.1 += 1;
+                }
+            }
+            Direction::Down => {
+                if x < grid.len() - 1 && grid[x + 1][y] != '#' {
+                    self.current_position.0 += 1;
+                }
+            }
+            Direction::Left => {
+                if y > 0 && grid[x][y - 1] != '#' {
+                    self.current_position.1 -= 1;
+                }
+            }
+        }
+    }
+}
 
 fn get_guard_location(vec_grid: &Vec<Vec<char>>) -> (usize, usize) {
     for (y, row) in vec_grid.iter().enumerate() {
@@ -53,94 +82,20 @@ fn main() {
     let mut steps: u32 = 0;
 
     // Get initial position
-    let mut guard: Guard = Guard {
-        current_position: get_guard_location(&vec_2d),
-        direction: Direction::Up,
-    };
+    let guard_position = get_guard_location(&vec_2d);
 
-    println!("{:?}", guard);
+    // Instanciate guard
 
-    let (y, x) = &guard.current_position;
+    // let mut guard: Guard = Guard {
+    //   current_position: get_guard_location(&vec_2d),
+    //   direction: Direction::Up,
+    // };
+    let mut guard: Guard = Guard::new(guard_position, Direction::Up);
 
-    // Finish this
-    fn move_guard(vec_grid: &Vec<Vec<char>>) {
-        if guard.current_position.0 < 0
-            || guard.current_position.0 > max_length
-            || guard.current_position.1 < 0
-            || guard.current_position.1 > max_width
-        {
-            println!("Out of bounds at {}", guard.current_position)
-            // return steps
-        } else {
-            match guard.direction {
-                Direction::Up => {
-                    if vec_2d[*y - 1][*x] == '#' {
-                        guard.direction = Direction::Right;
-                    } else {
-                        guard.current_position.0 -= 1;
-                    }
-                }
-                Direction::Down => {
-                    if vec_2d[*y + 1][*x] == '#' {
-                        guard.direction = Direction::Left;
-                    } else {
-                        guard.current_position.0 += 1;
-                    }
-                }
-                Direction::Right => {
-                    if vec_2d[*y][*x + 1] == '#' {
-                        guard.direction = Direction::Down;
-                    } else {
-                        guard.current_position.1 += 1;
-                    }
-                }
-                Direction::Left => {
-                    if vec_2d[*y][*x - 1] == '#' {
-                        guard.direction = Direction::Up;
-                    } else {
-                        guard.current_position.1 -= 1;
-                    }
-                }
-            }
-        }
+    while guard.current_position.0 <= max_length && guard.current_position.1 <= max_width {
+        guard.move_guard(&vec_2d);
+        steps += 1;
     }
 
-    // while guard.current_position.0 > 0
-    //     && guard.current_position.0 < max_length
-    //     && guard.current_position.1 > 0
-    //     && guard.current_position.1 < max_width
-    // {
-    //     match guard.direction {
-    //         Direction::Up => {
-    //             if vec_2d[*y - 1][*x] == '#' {
-    //                 guard.direction = Direction::Right;
-    //             } else {
-    //                 guard.current_position.0 -= 1;
-    //             }
-    //         }
-    //         Direction::Down => {
-    //             if vec_2d[*y + 1][*x] == '#' {
-    //               guard.direction = Direction::Left;
-    //             } else {
-    //               guard.current_position.0 += 1;
-    //             }
-    //         }
-    //         Direction::Right => {
-    //             if vec_2d[*y][*x + 1] == '#' {
-    //               guard.direction = Direction::Down;
-    //             } else {
-    //               guard.current_position.1 += 1;
-    //             }
-    //         }
-    //         Direction::Left => {
-    //             if vec_2d[*y][*x - 1] == '#' {
-    //               guard.direction = Direction::Up;
-    //             } else {
-    //               guard.current_position.1 -= 1;
-    //             }
-    //         }
-    //     }
-    // }
-
-    // let guard = Guard::new(guard_position, Direction::Up);
+    println!("{:?}", guard);
 }
