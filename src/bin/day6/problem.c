@@ -9,15 +9,15 @@ int num;
 int *ptr;
 int **ptr_to_ptr;
 
-int  main(void)
+int main(void)
 {
   int fd;
-  char  str[100000];
-  char  buffer[1001];
-  int   readsize;
+  char str[100000];
+  char buffer[1001];
+  int readsize;
 
   fd = open("test.txt", O_RDONLY);
-  if( fd == -1)
+  if (fd == -1)
   {
     printf("Error1\n");
     return (1);
@@ -59,7 +59,6 @@ typedef enum e_dir
   LEFT
 } t_dir;
 
-
 int calculate_path(char *str, int total_len)
 {
   int y;
@@ -74,9 +73,9 @@ int calculate_path(char *str, int total_len)
     width++;
   printf("width: %i\n", width);
   total_len -= width;
-   printf("total_len: %i\n", total_len);
+  printf("total_len: %i\n", total_len);
   length = total_len / width;
-    printf("len: %i\n", length);
+  printf("len: %i\n", length);
   y = 0;
   x = 0;
   while (str[(y * width + x) + y] == '.' || str[(y * width + x) + y] == '\n' || str[(y * width + x) + y] == '#')
@@ -117,20 +116,19 @@ int calculate_path(char *str, int total_len)
     if (str[(y * width + x) + y] == '#')
     {
       steps--;
-     if (dir == DOWN)
+      if (dir == DOWN)
         y -= 1;
       if (dir == RIGHT)
-       x -= 1;
+        x -= 1;
       if (dir == UP)
         y += 1;
-     if (dir == LEFT)
-       x += 1;
-     dir = (dir + 1) % 4;
+      if (dir == LEFT)
+        x += 1;
+      dir = (dir + 1) % 4;
     }
     if (y > length || y < 0 || str[(y * width + x) + y] == '\n' || x < 0)
       return (steps);
     steps++;
-     printf("steps: %i\ny: %i\nx:%i\ndir: %i\n----\n", steps, y, x, dir);
+    printf("steps: %i\ny: %i\nx:%i\ndir: %i\n----\n", steps, y, x, dir);
   }
-
 }
