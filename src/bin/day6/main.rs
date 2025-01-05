@@ -24,26 +24,40 @@ impl Guard {
     }
 
     fn move_guard(&mut self, grid: &Vec<Vec<char>>) {
-        let (x, y) = self.current_position;
+        let (y, x) = self.current_position;
+
+        // Finish making these to refactor
         match self.direction {
             Direction::Up => {
-                if x > 0 && grid[x - 1][y] != '#' {
-                    self.current_position.0 -= 1;
-                }
+              match grid[y - 1][x] {
+                  '#' => self.direction = Direction::Right,
+                  _ => self.current_position.0 -= 1,
+              }
+                // if grid[y - 1][x] != '#' {
+                //     self.current_position.0 -= 1;
+                // } else if grid[y - 1][x] == '#' {
+                //     self.direction = Direction::Right
+                // }
             }
             Direction::Right => {
-                if y < grid[0].len() - 1 && grid[x][y + 1] != '#' {
+                if grid[y][x + 1] != '#' {
                     self.current_position.1 += 1;
+                } else if grid[y][x + 1] == '#' {
+                    self.direction = Direction::Down
                 }
             }
             Direction::Down => {
-                if x < grid.len() - 1 && grid[x + 1][y] != '#' {
+                if grid[y + 1][x] != '#' {
                     self.current_position.0 += 1;
+                } else if grid[y + 1][x] == '#' {
+                    self.direction = Direction::Left
                 }
             }
             Direction::Left => {
-                if y > 0 && grid[x][y - 1] != '#' {
+                if grid[y][x - 1] != '#' {
                     self.current_position.1 -= 1;
+                } else if grid[y][x - 1] == '#' {
+                    self.direction = Direction::Up
                 }
             }
         }
@@ -92,10 +106,19 @@ fn main() {
     // };
     let mut guard: Guard = Guard::new(guard_position, Direction::Up);
 
-    while guard.current_position.0 <= max_length && guard.current_position.1 <= max_width {
+    println!("{:?}", guard.current_position);
+
+    // main loop
+    while guard.current_position.0 <= max_length
+        && guard.current_position.1 <= max_width
+        && guard.current_position.0 >= 0
+        && guard.current_position.1 >= 0
+    {
         guard.move_guard(&vec_2d);
         steps += 1;
+        println!("{:?}", guard.current_position);
     }
+    println!("steps {:?}", steps);
 
     println!("{:?}", guard);
 }
