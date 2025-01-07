@@ -13,6 +13,7 @@ enum Direction {
 struct Guard {
     current_position: (usize, usize),
     direction: Direction,
+    unique_positions: usize,
 }
 
 impl Guard {
@@ -20,47 +21,67 @@ impl Guard {
         Guard {
             current_position: position,
             direction,
+            unique_positions: 1,
         }
     }
 
-    fn move_guard(&mut self, grid: &Vec<Vec<char>>) {
+    fn move_guard(&mut self, grid: &mut Vec<Vec<char>>) -> bool {
         let (y, x) = self.current_position;
 
-        // Finish making these to refactor
-        match self.direction {
-            Direction::Up => {
-              match grid[y - 1][x] {
-                  '#' => self.direction = Direction::Right,
-                  _ => self.current_position.0 -= 1,
-              }
-                // if grid[y - 1][x] != '#' {
-                //     self.current_position.0 -= 1;
-                // } else if grid[y - 1][x] == '#' {
-                //     self.direction = Direction::Right
-                // }
-            }
-            Direction::Right => {
-                if grid[y][x + 1] != '#' {
-                    self.current_position.1 += 1;
-                } else if grid[y][x + 1] == '#' {
-                    self.direction = Direction::Down
-                }
-            }
-            Direction::Down => {
-                if grid[y + 1][x] != '#' {
-                    self.current_position.0 += 1;
-                } else if grid[y + 1][x] == '#' {
-                    self.direction = Direction::Left
-                }
-            }
-            Direction::Left => {
-                if grid[y][x - 1] != '#' {
-                    self.current_position.1 -= 1;
-                } else if grid[y][x - 1] == '#' {
-                    self.direction = Direction::Up
-                }
-            }
+        println!("move_guard");
+
+        if grid[y][x] == '.' || grid[y][x] == '^' {
+            grid[y][x] = 'X'
         }
+
+        let next_move_up = if y > 0 { grid[y - 1][x] } else { '-' };
+        let next_move_right = if x < grid[0].len() - 1 { grid[y][x + 1] } else { '-' };
+        let next_move_down = if y < grid.len() - 1 { grid[y + 1][x] } else { '-' };
+        let next_move_left = if x > 0 { grid[y][x - 1] } else { '-' };
+
+        match self.direction {
+            Direction::Up => match next_move_up {
+                '#' => self.direction = Direction::Right,
+                '.' => {
+                    self.current_position.0 -= 1;
+                    self.unique_positions += 1;
+                }
+                'X' => self.current_position.0 -= 1,
+                '-' => return false,
+                _ => panic!(),
+            },
+            Direction::Right => match next_move_right {
+                '#' => self.direction = Direction::Down,
+                '.' => {
+                    self.current_position.1 += 1;
+                    self.unique_positions += 1
+                }
+                'X' => self.current_position.1 += 1,
+                '-' => return false,
+                _ => panic!(),
+            },
+            Direction::Down => match next_move_down {
+                '#' => self.direction = Direction::Left,
+                '.' => {
+                    self.current_position.0 += 1;
+                    self.unique_positions += 1;
+                }
+                'X' => self.current_position.0 += 1,
+                '-' => return false,
+                _ => panic!(),
+            },
+            Direction::Left => match next_move_left {
+                '#' => self.direction = Direction::Up,
+                '.' => {
+                    self.current_position.1 -= 1;
+                    self.unique_positions += 1
+                }
+                'X' => self.current_position.1 -= 1,
+                '-' => return false,
+                _ => panic!(),
+            },
+        }
+        true
     }
 }
 
@@ -78,7 +99,7 @@ fn get_guard_location(vec_grid: &Vec<Vec<char>>) -> (usize, usize) {
 
 fn main() {
     // Get input
-    let input = fs::read_to_string("src/bin/day6/test.txt").expect("Unable to read file");
+    let input = fs::read_to_string("src/bin/day6/input.txt").expect("Unable to read file");
 
     // Create a 2D vector
     let mut vec_2d: Vec<Vec<char>> = Vec::new();
@@ -90,35 +111,28 @@ fn main() {
         vec_2d.push(row);
     }
 
-    let max_length: usize = vec_2d.len();
-    let max_width: usize = vec_2d[0].len();
-
-    let mut steps: u32 = 0;
-
     // Get initial position
     let guard_position = get_guard_location(&vec_2d);
 
     // Instanciate guard
-
-    // let mut guard: Guard = Guard {
-    //   current_position: get_guard_location(&vec_2d),
-    //   direction: Direction::Up,
-    // };
     let mut guard: Guard = Guard::new(guard_position, Direction::Up);
 
-    println!("{:?}", guard.current_position);
+    // Main loop
+    loop {
+        // Check if out of bounds
+        if guard.current_position.0 >= vec_2d.len()
+            || guard.current_position.1 >= vec_2d[0].len()
+        {
+            println!("Out of bounds! ");
+            break;
+        }
 
-    // main loop
-    while guard.current_position.0 <= max_length
-        && guard.current_position.1 <= max_width
-        && guard.current_position.0 >= 0
-        && guard.current_position.1 >= 0
-    {
-        guard.move_guard(&vec_2d);
-        steps += 1;
-        println!("{:?}", guard.current_position);
+        // Move the guard
+        if !guard.move_guard(&mut vec_2d) {
+            println!("Travel over!");
+            break;
+        }
     }
-    println!("steps {:?}", steps);
 
-    println!("{:?}", guard);
+    println!("unique positions: {}", guard.unique_positions);
 }
